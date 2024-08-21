@@ -4,8 +4,9 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
-} from "@remix-run/react";
-import "./tailwind.css";
+} from '@remix-run/react';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import './tailwind.css';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -25,6 +26,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+const queryClient = new QueryClient();
+
 export default function App() {
-  return <Outlet />;
+  return (
+    /**
+     * With remix we don't really need to use react-query, because it provides in-built SSR,
+     * but this is how it would be implemented, if the existing application already had an extensive react-query usage.
+     */
+    <QueryClientProvider client={queryClient}>
+      <Outlet />
+    </QueryClientProvider>
+  );
 }
