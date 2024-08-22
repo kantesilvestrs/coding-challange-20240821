@@ -1,15 +1,6 @@
 import type { MetaFunction } from '@remix-run/node';
-import { useMemo } from 'react';
-import { getCart } from '~/api/cart';
-import { getItems } from '~/api/items';
-import { useGetCart } from '~/queries/use-get-cart';
-import { useGetProducts } from '~/queries/use-get-products';
-
-// showing off my ts skills 🤣
-type CartItem = NonNullable<
-  Awaited<ReturnType<typeof getCart>>
->['cart'][number];
-type Product = NonNullable<Awaited<ReturnType<typeof getItems>>>[number];
+import { Link } from '@remix-run/react';
+import { useCart } from '~/providers/cart-provider';
 
 export const meta: MetaFunction = () => {
   return [
@@ -19,33 +10,60 @@ export const meta: MetaFunction = () => {
 };
 
 export default function Index() {
-  const products = useGetProducts();
-  const { cart } = useGetCart();
-
-  const cartItems = useMemo(
-    () =>
-      cart.reduce<(CartItem & Product)[]>((acc, cV) => {
-        const product = products.find((product) => product.sku === cV.sku);
-        if (!product) return acc;
-
-        acc.push({
-          ...product,
-          ...cV,
-        });
-
-        return acc;
-      }, []),
-    [cart, products]
-  );
+  const { cart, changeQty, removeItem } = useCart();
 
   return (
     <main>
-      <h1>Checkout</h1>
-      <ul>
-        {cartItems.map(({ sku, name }) => (
-          <li key={sku}>{name}</li>
-        ))}
-      </ul>
+      <div>
+        <Link to={'/'}>
+          <button data-testid="go-back-home-button" type="button">
+            Back
+          </button>
+        </Link>
+        <h1>Checkout</h1>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Price</th>
+            <th>Qty</th>
+            <th>Total</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {cart.map(({ sku, name, price, qty }) => (
+            <tr data-testid={`checkout-item-${sku}`} key={sku}>
+              <td data-testid={`checkout-item-${sku}-name`}>{name}</td>
+              <td data-testid={`checkout-item-${sku}-price`}>{price}</td>
+              <td data-testid={`checkout-item-${sku}-qty`}>{qty}</td>
+              <td data-testid={`checkout-item-${sku}-total`}>
+                {Math.floor(qty * price * 100) / 100}
+              </td>
+              <td>
+                <button
+                  data-testid="remove-item-from-checkout-button"
+                  onClick={() => changeQty(sku, qty + 1)}
+                >
+                  Add item
+                </button>
+                <button
+                  data-testid="remove-item-from-checkout-button"
+                  onClick={() =>
+                    qty === 1 ? removeItem(sku) : changeQty(sku, qty - 1)
+                  }
+                >
+                  Remove
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <button data-testid="submit-basket-button" type="button">
+        Checkout
+      </button>
     </main>
   );
 }

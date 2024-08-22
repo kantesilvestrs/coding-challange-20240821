@@ -1,12 +1,15 @@
 import {
+  json,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from '@remix-run/react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import './tailwind.css';
+import { getItems } from './api/items';
+import { getCart } from './api/cart';
+import { CartProvider } from './providers/cart-provider';
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -26,16 +29,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-const queryClient = new QueryClient();
+export async function loader() {
+  const products = (await getItems()) || [];
+  const { cart = [] } = (await getCart()) || {};
+
+  type CartProductItem = (typeof products)[number] & (typeof cart)[number];
+
+  const cartItems = cart.reduce<CartProductItem[]>((acc, cV) => {
+    const product = products.find((product) => product.sku === cV.sku);
+    if (!product) return acc;
+
+    acc.push({
+      ...product,
+      ...cV,
+      qty: cV.qty > product.basketLimit ? product.basketLimit : cV.qty,
+    });
+
+    return acc;
+  }, []);
+
+  return json(cartItems);
+}
 
 export default function App() {
+  const data = useLoaderData<typeof loader>();
   return (
-    /**
-     * With remix we don't really need to use react-query, because it provides in-built SSR,
-     * but this is how it would be implemented, if the existing application already had an extensive react-query usage.
-     */
-    <QueryClientProvider client={queryClient}>
+    <CartProvider initialValue={data}>
       <Outlet />
-    </QueryClientProvider>
+    </CartProvider>
   );
 }

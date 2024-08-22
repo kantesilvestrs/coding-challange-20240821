@@ -19,3 +19,6 @@ const server = http.createServer({}, app);
 server.listen(PORT, () => {
   console.log(`JSON Mock Server is running on http://localhost:${PORT}`);
 });
+
+process.once('SIGINT', () => server.close());
+process.once('SIGTERM', () => server.close());

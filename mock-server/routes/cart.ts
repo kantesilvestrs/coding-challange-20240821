@@ -5,7 +5,7 @@ export interface CartState {
   cart: CartItem[];
 }
 
-interface CartItem {
+export interface CartItem {
   sku: Product['sku'];
   qty: number;
 }
