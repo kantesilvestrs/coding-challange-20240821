@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { Link } from '@remix-run/react';
+import { CartSummary } from '~/components/cart-summary';
 import { useCart } from '~/providers/cart-provider';
 
 export const meta: MetaFunction = () => {
@@ -46,6 +47,7 @@ export default function Index() {
             <Typography variant="h4">Checkout</Typography>
           </Stack>
         </Box>
+        <CartSummary />
         <Table>
           <TableHead>
             <TableRow>
@@ -63,13 +65,13 @@ export default function Index() {
                   {name}
                 </TableCell>
                 <TableCell data-testid={`checkout-item-${sku}-price`}>
-                  {price}
+                  ${price}
                 </TableCell>
                 <TableCell data-testid={`checkout-item-${sku}-qty`}>
                   {qty}
                 </TableCell>
                 <TableCell data-testid={`checkout-item-${sku}-total`}>
-                  {Math.floor(qty * price * 100) / 100}
+                  ${Math.floor(qty * price * 100) / 100}
                 </TableCell>
                 <TableCell>
                   <Stack direction="row" gap={2} justifyContent="end">

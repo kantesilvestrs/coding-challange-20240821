@@ -13,6 +13,7 @@ import { json, Link, useLoaderData } from '@remix-run/react';
 import { Product } from 'mock-server/routes/items';
 import { useCallback } from 'react';
 import { getItems } from '~/api/items';
+import { CartSummary } from '~/components/cart-summary';
 import { useCart } from '~/providers/cart-provider';
 
 export const meta: MetaFunction = () => {
@@ -72,6 +73,7 @@ export default function Index() {
         <Typography pl={2} pt={2} variant="h4" textAlign="center">
           Items List
         </Typography>
+        <CartSummary />
         <Table>
           {products.map((product) => (
             <TableRow
@@ -85,7 +87,7 @@ export default function Index() {
                   <span>{product.descr}</span>
                 </div>
               </TableCell>
-              <TableCell>{product.price}</TableCell>
+              <TableCell>${product.price}</TableCell>
               <TableCell>
                 <Stack spacing={2} direction="row" justifyContent="end">
                   <Button

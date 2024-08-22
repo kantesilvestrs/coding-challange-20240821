@@ -16,6 +16,10 @@ app.use(router);
 
 const server = http.createServer({}, app);
 
+/**
+ * 😂 I read the (i.e. no erver is required for this assessment) only at the very end 😂
+ */
+
 server.listen(PORT, () => {
   console.log(`JSON Mock Server is running on http://localhost:${PORT}`);
 });
