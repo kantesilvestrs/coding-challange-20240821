@@ -89,7 +89,7 @@ export default function Index() {
         ))}
       </table>
       <Link to={'/cart'}>
-        <button>Checkout</button>
+        <button data-testid="navigate-to-cart-button">Checkout</button>
       </Link>
     </main>
   );
