@@ -1,3 +1,13 @@
+import {
+  Box,
+  Button,
+  Paper,
+  Stack,
+  Table,
+  TableCell,
+  TableRow,
+  Typography,
+} from '@mui/material';
 import type { MetaFunction } from '@remix-run/node';
 import { json, Link, useLoaderData } from '@remix-run/react';
 import { Product } from 'mock-server/routes/items';
@@ -57,40 +67,57 @@ export default function Index() {
   );
 
   return (
-    <main>
-      <h1>Items List</h1>
-      <table>
-        {products.map((product) => (
-          <tr data-testid={`items-list-item-${product.sku}`} key={product.sku}>
-            <td>
-              <div>
-                <span>{product.name}</span>
-                <br />
-                <span>{product.descr}</span>
-              </div>
-            </td>
-            <td>{product.price}</td>
-            <td>
-              <button
-                data-testid="add-to-cart-button"
-                onClick={() => handleOnAddItem(product)}
-              >
-                Add item
-              </button>
-              <button
-                data-testid="remove-from-cart-button"
-                disabled={!cart.some((item) => item.sku === product.sku)}
-                onClick={() => handleOnRemoveItem(product)}
-              >
-                Remove
-              </button>
-            </td>
-          </tr>
-        ))}
-      </table>
-      <Link to={'/cart'}>
-        <button data-testid="navigate-to-cart-button">Checkout</button>
-      </Link>
-    </main>
+    <Paper style={{ width: 500 }}>
+      <Stack spacing={2} gap={2} direction="column">
+        <Typography pl={2} pt={2} variant="h4" textAlign="center">
+          Items List
+        </Typography>
+        <Table>
+          {products.map((product) => (
+            <TableRow
+              data-testid={`items-list-item-${product.sku}`}
+              key={product.sku}
+            >
+              <TableCell>
+                <div>
+                  <span>{product.name}</span>
+                  <br />
+                  <span>{product.descr}</span>
+                </div>
+              </TableCell>
+              <TableCell>{product.price}</TableCell>
+              <TableCell>
+                <Stack spacing={2} direction="row" justifyContent="end">
+                  <Button
+                    variant="contained"
+                    data-testid="add-to-cart-button"
+                    onClick={() => handleOnAddItem(product)}
+                  >
+                    Add item
+                  </Button>
+                  <Button
+                    variant="contained"
+                    data-testid="remove-from-cart-button"
+                    disabled={!cart.some((item) => item.sku === product.sku)}
+                    onClick={() => handleOnRemoveItem(product)}
+                  >
+                    Remove
+                  </Button>
+                </Stack>
+              </TableCell>
+            </TableRow>
+          ))}
+        </Table>
+        <Box pb={2} pr={2}>
+          <Stack direction="row" justifyContent="end">
+            <Link to={'/cart'}>
+              <Button variant="contained" data-testid="navigate-to-cart-button">
+                Checkout
+              </Button>
+            </Link>
+          </Stack>
+        </Box>
+      </Stack>
+    </Paper>
   );
 }
